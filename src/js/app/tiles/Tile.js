@@ -1,6 +1,6 @@
 define([], function () {
 
-    const constructor = function (ident, imgPath, rotation = 0) {
+    const constructor = function (ident, imgPath, rotation = 0, probability = 1) {
 
         const up = ident.substr(0, 1);
         const right = ident.substr(1, 1);
@@ -14,14 +14,15 @@ define([], function () {
             down,
             left,
             imgPath,
-            rotation
+            rotation,
+            probability
         };
 
         This.rotate = function (n) {
             let newIdent = ident + "";
             for (let i = 0; i < n; i++)
                 newIdent = newIdent.substr(3, 1) + newIdent.substr(0, 3);
-            return constructor(newIdent, imgPath, (rotation + n) % 4);
+            return constructor(newIdent, imgPath, (rotation + n) % 4, probability);
         };
 
         This.render = function () {

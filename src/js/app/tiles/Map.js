@@ -4,14 +4,12 @@ define([], function () {
 
         const width = 10;
         const height = 10;
-        const data = [];
-        const locked = {};
 
         const This = {
             width,
             height,
-            data,
-            locked
+            data: [],
+            locked: {}
         };
 
         const dataSize = width * height;
@@ -20,12 +18,12 @@ define([], function () {
         }
 
         This.get = function (offset) {
-            return data[offset];
+            return This.data[offset];
         };
 
         This.fixPosition = function (offset, tile) {
-            data[offset] = [tile];
-            locked[offset] = true;
+            This.data[offset] = [tile];
+            This.locked[offset] = true;
         };
 
         // TODO: Move this to Utils
@@ -38,7 +36,7 @@ define([], function () {
         }
 
         This.renderTile = function (tileset, index) {
-            const maxOverlapping = 5;
+            const maxOverlapping = 3;
             if (tileset.length > maxOverlapping) {
                 tileset = shuffle(tileset).slice(0, maxOverlapping);
             }
@@ -53,7 +51,7 @@ define([], function () {
             target.innerHTML = "";
             for (let i = 0; i < dataSize; i++) {
 
-                target.innerHTML += This.renderTile(data[i], i);
+                target.innerHTML += This.renderTile(This.data[i], i);
             }
         };
 
@@ -70,10 +68,10 @@ define([], function () {
         };
 
         This.findRestrictionsFor = function (i) {
-            const up = This.findCommon(data[i - width], 'down');
-            const right = This.findCommon(data[i + 1], 'left');
-            const down =  This.findCommon(data[i + width], 'up');
-            const left = This.findCommon(data[i - 1], 'right');
+            const up = This.findCommon(This.data[i - width], 'down');
+            const right = This.findCommon(This.data[i + 1], 'left');
+            const down =  This.findCommon(This.data[i + width], 'up');
+            const left = This.findCommon(This.data[i - 1], 'right');
 
             const restrictions = {};
             if (up) restrictions.up = up;
@@ -86,10 +84,10 @@ define([], function () {
 
         This.restrict = function () {
             for (let i = 0; i < dataSize; i++) {
-                if(locked[i]) continue;
+                if(This.locked[i]) continue;
 
                 const restrictions = This.findRestrictionsFor(i);
-                data[i] = tileset.findTilesByRestrictions(restrictions);
+                This.data[i] = tileset.findTilesByRestrictions(restrictions);
             }
         };
 

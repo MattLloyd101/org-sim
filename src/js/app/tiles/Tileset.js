@@ -30,7 +30,8 @@ define(['app/tiles/Tile'], function(Tile) {
 
     const addTileAndRotations = function(tileset, path) {
         const ident = path.substr(0, 4);
-        const rot0 = Tile.new(ident, basePath + path);
+        const probability = ident.indexOf("C") === -1 ? 1 : 0.1;
+        const rot0 = Tile.new(ident, basePath + path, 0, probability);
         const rot1 = rot0.rotate(1);
         const rot2 = rot0.rotate(2);
         const rot3 = rot0.rotate(3);

@@ -12,17 +12,17 @@ body {
 
 .controls {
     background: #222;
-    height: 75vw;
-    margin-top: 12.5vw;
+    height: 75vh;
+    margin-top: 12.5vh;
     float: left;
     display: inline-block;
 }
 
 .tile-container {
     background: #000;
-    width: 75vw;
-    height: 75vw;
-    margin: 12.5vw 10px 12.5vw 12.5vw;
+    width: 75vh;
+    height: 75vh;
+    margin: 12.5vh 10px 12.5vh 12.5vh;
     padding: 0.5%;
 }
 
