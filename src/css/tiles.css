@@ -1,0 +1,70 @@
+body, html {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body {
+   margin:0;
+   padding:0;
+   height:100%;
+   overflow:hidden !important
+}
+
+.controls {
+    background: #222;
+    height: 75vw;
+    margin-top: 12.5vw;
+    float: left;
+    display: inline-block;
+}
+
+.tile-container {
+    background: #000;
+    width: 75vw;
+    height: 75vw;
+    margin: 12.5vw 10px 12.5vw 12.5vw;
+    padding: 0.5%;
+}
+
+.tile {
+    background: #333;
+    width: 10%;
+    height: 10%;
+    float: left;
+}
+
+.tile img {
+    opacity: 0.2;
+    width: 100%;
+    margin-top: -100%;
+    /*animation: fade 2s linear;
+    animation-iteration-count:infinite;*/
+}
+
+.tile img:first-child {
+    opacity: 0.1;
+    width: 100%;
+    margin-top: 0;
+}
+
+.tile img.rot1 {
+    transform: rotate(90deg);
+}
+
+.tile img.rot2 {
+    transform: rotate(180deg);
+}
+
+.tile img.rot3 {
+    transform: rotate(270deg);
+}
+
+.tile img:only-child {
+    opacity: 1;
+    animation: none;
+}
+
+@keyframes fade {
+    0%,100% { opacity: 0.05 }
+    50% { opacity: 0.1 }
+}

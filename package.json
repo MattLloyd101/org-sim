@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "r.js -o build.js && cp src/index.html out && cp lib/require.js out/js && cp -r src/css out",
+    "build": "r.js -o build.js && cp src/index.html out && cp lib/require.js out/js && cp -r src/css out && cp -r src/tiles out",
+    "build-tiles": "r.js -o build-tiles.js && cp src/tiles.html out && cp lib/require.js out/js && cp -r src/css out && cp -r src/tiles out",
     "watch": "npm-watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive test"
   },
   "author": "",
   "license": "ISC",
@@ -14,8 +15,19 @@
     "node": "8.11"
   },
   "watch": {
+    "build-tiles": {
+      "patterns": [
+        "src",
+        "lib"
+      ],
+      "extensions": "js,html,glsl,css",
+      "quiet": false
+    },
     "build": {
-      "patterns": ["src", "lib"],
+      "patterns": [
+        "src",
+        "lib"
+      ],
       "extensions": "js,html,glsl,css",
       "quiet": false
     }
@@ -24,7 +36,10 @@
     "requirejs": "^2.3.5"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
     "npm-watch": "^0.3.0",
+    "sinon": "^6.3.1",
     "text": "github:requirejs/text"
   }
 }
