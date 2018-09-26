@@ -1,5 +1,5 @@
 ({
-    baseUrl: "src/js",
+    baseUrl: "../../src/js",
     name: "app",
     out: "out/js/app.js",
     paths: {

@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "r.js -o build.js && cp src/index.html out && cp lib/require.js out/js && cp -r src/css out && cp -r src/tiles out",
-    "build-tiles": "r.js -o build-tiles.js && cp src/tiles.html out && cp lib/require.js out/js && cp -r src/css out && cp -r src/tiles out",
+    "build": "./build/main/build.sh",
+    "build-tiles": "./build/tiles/build.sh",
+    "build-p5": "./build/p5/build.sh",
     "watch": "npm-watch",
-    "test": "mocha --recursive test"
+    "test": "mocha --recursive test",
+    "server": "node src/js/server/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +18,14 @@
   },
   "watch": {
     "build-tiles": {
+      "patterns": [
+        "src",
+        "lib"
+      ],
+      "extensions": "js,html,glsl,css",
+      "quiet": false
+    },
+    "build-p5": {
       "patterns": [
         "src",
         "lib"
@@ -33,7 +43,10 @@
     }
   },
   "dependencies": {
-    "requirejs": "^2.3.5"
+    "express": "^4.16.3",
+    "p5": "^0.7.2",
+    "requirejs": "^2.3.5",
+    "toxiclibsjs": "^0.3.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",

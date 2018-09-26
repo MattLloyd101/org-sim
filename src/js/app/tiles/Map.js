@@ -1,4 +1,4 @@
-define([], function () {
+define(["app/utils/Random"], function (Random) {
 
     const constructor = function (tileset) {
 
@@ -26,19 +26,10 @@ define([], function () {
             This.locked[offset] = true;
         };
 
-        // TODO: Move this to Utils
-        function shuffle(a) {
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
         This.renderTile = function (tileset, index) {
             const maxOverlapping = 3;
             if (tileset.length > maxOverlapping) {
-                tileset = shuffle(tileset).slice(0, maxOverlapping);
+                tileset = Random.shuffle(tileset).slice(0, maxOverlapping);
             }
             let tileContents = tileset.reduce(function (out, tile) {
                 return out + tile.render();
@@ -56,7 +47,8 @@ define([], function () {
         };
 
         This.findCommon = function (tiles, direction) {
-            if (tiles == null || tiles.length == 0) return undefined;
+            //noinspection EqualityComparisonWithCoercionJS
+            if (tiles == null || tiles.length === 0) return undefined;
 
             const edgeTypes = tiles.map(function (tile) {
                 return tile[direction]
