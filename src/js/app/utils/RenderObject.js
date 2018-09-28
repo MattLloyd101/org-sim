@@ -24,7 +24,8 @@ define([], function () {
             scaleX, scaleY,
             rotationX, rotationY, rotationZ,
             performRender,
-            debug
+            debug,
+            context, cbContext
         };
 
 
@@ -48,10 +49,10 @@ define([], function () {
             return false;
         };
 
-        This.updateAll = function() {
-            if(This.update) This.update();
+        This.updateAll = function(dt) {
+            if(This.update) This.update(dt);
             children.map(function(child) {
-                child.updateAll();
+                child.updateAll(dt);
             });
         };
 
@@ -77,6 +78,10 @@ define([], function () {
             context.rotateY(This.rotationY);
             context.rotateZ(This.rotationZ);
             context.scale(This.scaleX, This.scaleY);
+        };
+
+        This.localToGlobal = function(point) {
+            const {x, y, z} = point;
         };
 
         // TODO: If we need a click buffer re-use This.render if This.cbRender is not defined.

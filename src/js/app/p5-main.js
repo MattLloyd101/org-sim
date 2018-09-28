@@ -14,6 +14,7 @@ define(["p5",
 
         const width = config.width;
         const height = config.height;
+        const timestep = 1;
 
         let root;
 
@@ -47,6 +48,9 @@ define(["p5",
             context.smooth(4);
             context.colorMode(context.HSB, 0xFF);
             context.textFont(font);
+            context.ambientLight(100);
+            context.pointLight(250, 250, 250, 100, 100, 0);
+            context.ambientMaterial(250);
 
             RenderObject.setRootContext(context);
             root = RenderObject.new();
@@ -64,7 +68,7 @@ define(["p5",
         };
 
         const update = function () {
-            root.updateAll();
+            root.updateAll(timestep);
         };
 
         const render = function () {

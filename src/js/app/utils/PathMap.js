@@ -16,8 +16,8 @@ define([], function () {
                 const obstacle = obstacles[key];
                 // intersectsWithObstacle inlined
                 const {x, y, width, height} = obstacle;
-                return containerX + testX >= x && containerX + testX < (x + width) &&
-                    containerY + testY >= y && containerY + testY < (y + height);
+                return containerX + testX >= x - safeSpace && containerX + testX < (x + width + safeSpace) &&
+                    containerY + testY >= y - safeSpace && containerY + testY < (y + height + safeSpace);
             });
 
             return obstructedKey !== undefined;
@@ -31,13 +31,15 @@ define([], function () {
             for (let x = safeSpace, ix = 0; x < width - safeSpace; x += resolution, ix++) {
                 for (let y = safeSpace, iy = 0; y < height - safeSpace; y += resolution, iy++) {
                     if (!isObstructed(x, y)) {
-                        const point = {x, y, ix, iy};
+                        const aX = containerX + x + (resolution / 2);
+                        const aY = containerY + y + (resolution / 2);
+                        const point = {x:aX, y:aY, ix, iy};
                         This.calculatedMap[ix + "," + iy] = point;
 
                         //noinspection EqualityComparisonWithCoercionJS
                         if (This.doorwayX != null && this.doorwayY != null) {
-                            const dX = (This.doorwayX) - (containerX + x);
-                            const dY = (This.doorwayY) - (containerY + y);
+                            const dX = (This.doorwayX) - aX;
+                            const dY = (This.doorwayY) - aY;
                             const thisDistEntrance = Math.sqrt(dX * dX + dY * dY);
                             if (thisDistEntrance < distEntrance) {
                                 This.entrancePoint = point;
@@ -65,16 +67,29 @@ define([], function () {
                 const point = This.calculatedMap[key];
                 const {x, y} = point;
                 context.push();
-                context.translate(containerX + x, containerY + y, 0);
+                context.translate(x, y, 0);
                 if (This.entrancePoint.x === x && This.entrancePoint.y === y) {
                     context.fill(context.color(50, 0xFF, 0xFF, 64));
                 } else {
                     context.fill(debugPointColour);
                 }
 
-                context.rect(0, 0, resolution, resolution);
+                context.rect(-resolution/2, -resolution/2, resolution, resolution);
                 context.pop();
             });
+
+            if(This.path) {
+                this.push();
+                this.translate(0, 0);
+                this.colorMode(this.RGB, 0xFF);
+                this.stroke(0xFF, 0, 0);
+                for(let i = 1; i < This.path.length; i++) {
+                    const a = This.path[i];
+                    const b = This.path[i - 1];
+                    this.line(a.x, a.y, 0, b.x, b.y, 0);
+                }
+                this.pop();
+            }
         };
 
         // assumes euclidian coordinates TL -> BR
@@ -109,6 +124,29 @@ define([], function () {
         This.removeObstacle = function (id) {
             delete obstacles[id];
             This.recalculate();
+        };
+
+        This.findClosestPoint = function(position) {
+            const {x, y} = position;
+            const tx = x, ty = y;
+            const keys = Object.keys(This.calculatedMap);
+            const [closestKey, _] = keys.reduce(function (closestAndDist, currentKey) {
+                const [closest, dist] = closestAndDist;
+                const current = This.calculatedMap[currentKey];
+                const {x, y} = current;
+                const dx = tx - x;
+                const dy = ty - y;
+                // could remove sqrt for an optimisation here.
+                const currDist = Math.sqrt(dx*dx + dy*dy);
+
+                if(currDist < dist) {
+                    return [currentKey, currDist];
+                }
+
+                return closestAndDist;
+            }, [null, Number.POSITIVE_INFINITY]);
+
+            return This.calculatedMap[closestKey];
         };
 
         This.recalculate();

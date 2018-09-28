@@ -53,7 +53,7 @@ define([], function () {
             current = map[nextIndex];
         }
 
-        return path;
+        return path.reverse();
     };
 
     const pathBetween = function (map, start, end, heuristicFn) {

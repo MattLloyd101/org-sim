@@ -6,16 +6,17 @@ define([
     const constructor = function (workstationNum, deskColour) {
 
         const workstationNumWidth = Math.ceil(workstationNum / 2);
-        const workstationWidth = 100;
-        const workstationSpacing = 20;
+        const workstationWidth = 125;
+        const workstationSpacing = 25;
         const deskDepth = 80;
 
-        const width = workstationNumWidth * workstationWidth + workstationSpacing * (workstationNumWidth);
+        const width = (workstationWidth / 2) + (workstationWidth + workstationSpacing) * (workstationNumWidth);
         const height = deskDepth * 2;
 
         const This = Object.assign(RenderObject.new(), {
             workstationNum,
             width, height,
+            debug: true,
             workstations: []
         });
 
@@ -27,20 +28,26 @@ define([
         for(let i = 0; i < workstationNum; i++) {
             const workstation = Workstation.new.apply(this, [deskColour]);
             const isEven = (i % 2) === 0;
-            workstation.x = workstationSpacing + Math.floor(i / 2) * (workstationWidth + workstationSpacing);
-            workstation.y = deskDepth * 3 / 4;
-            workstation.z = workstation.height;
+            workstation.x = workstationSpacing + (workstationWidth / 2) + Math.floor(i / 2) * (workstationWidth + workstationSpacing);
+            workstation.y = deskDepth;
+            workstation.z = 0;
             if (isEven) {
                 workstation.rotationZ = Math.PI;
-                workstation.x += workstation.width;
+                workstation.y -= deskDepth/3;
             } else {
                 workstation.rotationZ = 0;
-                workstation.y += deskDepth/4;
+                workstation.y += deskDepth/3;
             }
 
             This.workstations.push(workstation);
             This.addChild(workstation);
         }
+
+        This.findFreeWorkstation = function() {
+            return This.workstations.find(function(workstation) {
+                return workstation.isFree();
+            });
+        };
 
         This.update = function() {
         };

@@ -33,9 +33,9 @@ define(["app/utils/RenderObject",
 
             This.addChild(desk);
 
-            This.update = function() {
+            This.update = function(dt) {
                 // This.rotationX += (Math.PI / 60)/5;
-                This.rotationZ += (Math.PI / 60)/10;
+                This.rotationZ += ((Math.PI / 60)/10) * dt;
             };
 
             return This;
