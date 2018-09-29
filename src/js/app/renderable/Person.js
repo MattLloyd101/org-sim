@@ -50,21 +50,24 @@ define(["app/utils/RenderObject",
                 const dX = This.tX - This.x;
                 const dY = This.tY - This.y;
                 const dist = Math.sqrt(dX * dX + dY * dY);
+                const angle = Math.atan2(dY, dX);
+                // This is done regardless
+                This.rotationZ = angle + (Math.PI / 2);
 
                 if (dist < speed) {
                     This.x = This.tX;
                     This.y = This.tY;
+                    
                     delete This.isMoving;
                     delete This.tX;
                     delete This.tY;
                     EventBus.emitEvent("MOVE_COMPLETE", This);
                 }
 
-                const angle = Math.atan2(dY, dX);
-
-                This.x += speed * Math.cos(angle) * dt;
-                This.y += speed * Math.sin(angle) * dt;
-                This.rotationZ = angle + (Math.PI / 2);
+                const mX = speed * Math.cos(angle) * dt;
+                const mY = speed * Math.sin(angle) * dt;
+                This.x += mX;
+                This.y += mY;
             };
 
             This.update = function (dt) {
@@ -106,6 +109,9 @@ define(["app/utils/RenderObject",
             };
 
             This.findWorkstation = function (room) {
+                const desk = room.desk;
+                // const freeWorkstation = desk.findFreeWorkstation();
+                // const seatPosition = freeWorksation.freeSeat();
                 const map = room.pathMap.calculatedMap;
                 const mapKeys = Object.keys(map);
                 const randomKey = mapKeys[Math.floor(mapKeys.length * Math.random())];
@@ -115,7 +121,7 @@ define(["app/utils/RenderObject",
 
                 const initial = {x: This.x, y: This.y};
                 path.unshift(initial);
-                
+
                 room.pathMap.path = path;
                 This.walkPath(path);
             };

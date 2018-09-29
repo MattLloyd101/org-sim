@@ -33,6 +33,7 @@ define(["app/utils/RenderObject",
                 debug:true
             });
             
+            isPairing = true;
             if(isPairing) {
                 userPositions.push({x: - userDistance/2, y: userDistance});
                 userPositions.push({x: + userDistance/2, y: userDistance});
@@ -74,7 +75,7 @@ define(["app/utils/RenderObject",
                 this.fill(standColour);
                 for(let i = 0; i < This.userPositions.length; i++) {
                     const {x, y} = This.userPositions[i];
-                    this.ellipse(x, y, 25, 25);
+                    this.ellipse(x, y, 50, 50);
                 }
             };
 

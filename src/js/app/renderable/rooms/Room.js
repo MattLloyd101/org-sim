@@ -12,7 +12,7 @@ define(["app/utils/RenderObject",
             const doorDepth = 0;
             const depth = 200;
 
-            const pathMap = PathMap.new(-width / 2, -height / 2, width, height, 15, 25);
+            const pathMap = PathMap.new(-width / 2, -height / 2, width, height, 5, 25);
 
             const parent = RenderObject.new();
             const This = Object.assign(parent, {
