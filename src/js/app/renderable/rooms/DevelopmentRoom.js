@@ -1,13 +1,19 @@
 define(["app/utils/RenderObject",
+        "app/utils/math3d/Vector3",
+        "app/utils/math3d/Quaternion",
         "app/renderable/rooms/Room",
-        "app/renderable/Items/Desk"],
+        "app/renderable/Items/Desk",
+        "app/utils/Astar"],
     function (RenderObject,
+              Vector3,
+              Quaternion,
               Room,
-              Desk) {
+              Desk,
+              AStar) {
 
-        const constructor = function (workstationCount, colour) {
+        const constructor = function (workstationCount, canPair, doorDirection, colour) {
 
-            const desk = Desk.new.apply(this, [5, colour]);
+            const desk = Desk.new.apply(this, [workstationCount, canPair, colour]);
 
             const leftMargin = 100;
             const rightMargin = 20;
@@ -17,7 +23,7 @@ define(["app/utils/RenderObject",
             const width = leftMargin + desk.width + rightMargin;
             const height = topMargin + desk.height + bottomMargin;
 
-            const room = Room.new.apply(this, [width, height, "BOTTOM", colour, "DEVELOPMENT"]);
+            const room = Room.new.apply(this, [width, height, doorDirection, colour, "DEVELOPMENT"]);
 
             desk.x = -(desk.width / 2) + (leftMargin - rightMargin) / 2;
             desk.y = -(desk.height / 2) + (topMargin - bottomMargin) / 2;
@@ -33,9 +39,55 @@ define(["app/utils/RenderObject",
 
             This.addChild(desk);
 
-            This.update = function(dt) {
-                // This.rotationX += (Math.PI / 60)/5;
-                This.rotationZ += ((Math.PI / 60)/10) * dt;
+            This.update = function (dt) {
+
+            };
+
+            This.seatPositionInRoom = function (workstation, seatPosition) {
+
+                workstation.transformToContainer(seatPosition);
+                desk.transformToContainer(seatPosition);
+
+                return seatPosition;
+            };
+
+            This.findWorkstation = function (person) {
+                const room = This;
+                const desk = room.desk;
+
+                const freeWorkstation = desk.findFreeWorkstation();
+                if (freeWorkstation !== null) {
+
+                    const seatPosition = freeWorkstation.findFreeSeat();
+                    if (seatPosition !== null) {
+                        freeWorkstation.takeSeat(person, seatPosition);
+
+                        const seatPositionInRoom = room.seatPositionInRoom(freeWorkstation, seatPosition);
+
+                        const seatPositionOnMap = room.pathMap.findClosestPoint(seatPositionInRoom);
+                        const map = room.pathMap.calculatedMap;
+                        const path = AStar.pathBetween(map, room.pathMap.entrancePoint, seatPositionOnMap);
+
+                        const initial = {x: person.x, y: person.y};
+                        path.unshift(initial);
+                        path.push(seatPositionInRoom);
+
+                        room.pathMap.path = path;
+
+                        const facePosition = {x: 0, y: 0, z: 0};
+                        freeWorkstation.transformToContainer(facePosition);
+                        desk.transformToContainer(facePosition);
+
+                        const dX = facePosition.x - seatPositionInRoom.x;
+                        const dY = facePosition.y - seatPositionInRoom.y;
+                        const angle = Math.atan2(dY, dX) + Math.PI / 2;
+                        person.walkPath(path,
+                            {rotationX: 0, rotationY: 0, rotationZ: angle},
+                            function () {
+                                freeWorkstation.turnOn();
+                            });
+                    }
+                }
             };
 
             return This;

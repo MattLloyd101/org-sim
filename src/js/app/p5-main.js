@@ -1,65 +1,76 @@
 define(["p5",
         "app/config/p5-config",
+        "app/utils/Keyboard",
+        "app/tiles/Tileset",
         "app/utils/RenderObject",
         "app/renderable/Person",
+        "app/renderable/RootContext",
         "app/renderable/rooms/DevelopmentRoom",
-        "app/utils/EventBus"],
+        "app/renderable/rooms/MeetingRoom",
+        "app/renderable/rooms/RoomSet",
+        "app/renderable/items/TileGroup"],
 
     function (p5,
               config,
+              Keyboard,
+              Tileset,
               RenderObject,
               Person,
+              RootContext,
               DevelopmentRoom,
-              EventBus) {
+              MeetingRoom,
+              RoomSet,
+              TileGroup) {
 
-        const width = config.width;
-        const height = config.height;
+        const width = window.innerWidth;//config.width;
+        const height = window.innerHeight;
         const timestep = 1;
 
         let root;
+        let font;
+        let tileset;
 
         const createScene = function (root, context) {
             const teamColour = 0xFF;
+            const developerCount = 12;
 
-            const room = DevelopmentRoom.new.apply(context, [2, teamColour]);
+            const devRoom = DevelopmentRoom.new.apply(context, [developerCount, false, "TOP", teamColour]);
+            const meetingRoom = MeetingRoom.new.apply(context, [developerCount,"BOTTOM", teamColour]);
+            const roomSet = RoomSet.new.apply(context, [[devRoom, meetingRoom], teamColour]);
 
-            room.x = room.y = 350;
+            root.addChild(roomSet);
 
-            root.addChild(room);
-
-            const person = Person.new.apply(context, ["DEV", teamColour]);
-
-            person.x = person.y = 100;
-
-            setTimeout(function () {
-                person.enterRoom(room);
-            }, 0);
+            const tiles = tileset.allTiles;
+            const tileImg = TileGroup.new.apply(context, [tiles, 100, 100]);
+            tileImg.x = width / 2;
+            tileImg.y = height / 2;
+            tileImg.rotationX = 0;
+            tileImg.rotationY = 0;
+            tileImg.rotationZ = 0;
+            root.addChild(tileImg);
         };
 
-        let font;
+
         const preload = function (context) {
             font = context.loadFont('fonts/OpenSans-light.otf');
+            tileset = Tileset.loadNoRiversTileset(context);
         };
 
-        const setup = function (context) {
+        const setupContext = function (context) {
             const renderer = context.WEBGL; //context.P2D; //
             context.createCanvas(width, height, renderer);
             context.ortho(-width / 2, width / 2, -height / 2, height / 2, 0, 2000);
             context.smooth(4);
             context.colorMode(context.HSB, 0xFF);
             context.textFont(font);
-            context.ambientLight(100);
-            context.pointLight(250, 250, 250, 100, 100, 0);
-            context.ambientMaterial(250);
+        };
+
+        const setup = function (context) {
+            Keyboard.setup(context);
+            setupContext(context);
 
             RenderObject.setRootContext(context);
-            root = RenderObject.new();
-
-            if (renderer === context.WEBGL) {
-                root.x = -config.width / 2;
-                root.y = -config.height / 2;
-                // root.z = 500;
-            }
+            root = RootContext.new();
 
             root.rotationX = Math.PI / 4;
             root.rotationZ = Math.PI / 8;
@@ -67,11 +78,14 @@ define(["p5",
             createScene(root, context);
         };
 
+        let n = 0;
         const update = function () {
             root.updateAll(timestep);
+            n++;
         };
 
         const render = function () {
+
             root.renderAll();
             root.cbRenderAll();
         };
@@ -90,6 +104,10 @@ define(["p5",
                 sketch.background(0xFF);
                 update();
                 render();
+            };
+
+            sketch.keyPressed = function () {
+                console.log(sketch.keyCode);
             };
         };
 

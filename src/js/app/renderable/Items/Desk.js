@@ -3,7 +3,7 @@ define([
     "app/renderable/Items/Workstation",
     "app/renderable/Items/DeskPlane"], function (RenderObject, Workstation, DeskPlane) {
 
-    const constructor = function (workstationNum, deskColour) {
+    const constructor = function (workstationNum, isPairing, deskColour) {
 
         const workstationNumWidth = Math.ceil(workstationNum / 2);
         const workstationWidth = 125;
@@ -16,7 +16,6 @@ define([
         const This = Object.assign(RenderObject.new(), {
             workstationNum,
             width, height,
-            debug: true,
             workstations: []
         });
 
@@ -26,7 +25,7 @@ define([
         deskPlane.y = height/2;
 
         for(let i = 0; i < workstationNum; i++) {
-            const workstation = Workstation.new.apply(this, [deskColour]);
+            const workstation = Workstation.new.apply(this, [deskColour, isPairing]);
             const isEven = (i % 2) === 0;
             workstation.x = workstationSpacing + (workstationWidth / 2) + Math.floor(i / 2) * (workstationWidth + workstationSpacing);
             workstation.y = deskDepth;
@@ -45,7 +44,7 @@ define([
 
         This.findFreeWorkstation = function() {
             return This.workstations.find(function(workstation) {
-                return workstation.isFree();
+                return workstation.hasSpace();
             });
         };
 

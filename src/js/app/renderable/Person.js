@@ -22,7 +22,7 @@ define(["app/utils/RenderObject",
             const width = radius * 2;
             //noinspection JSSuspiciousNameCombination
             const height = width;
-            const depth = 80;
+            const depth = 100;
 
             const speed = _speed || Random.between(3, 5);
 
@@ -57,7 +57,7 @@ define(["app/utils/RenderObject",
                 if (dist < speed) {
                     This.x = This.tX;
                     This.y = This.tY;
-                    
+
                     delete This.isMoving;
                     delete This.tX;
                     delete This.tY;
@@ -76,16 +76,20 @@ define(["app/utils/RenderObject",
                 }
             };
 
-            This.walkPath = function(path) {
+            This.walkPath = function (path, finalRotations, callback) {
                 const {x, y} = path[0];
 
                 EventBus.bindListener("MOVE_COMPLETE", function (src) {
                     if (src === This) {
                         EventBus.removeListener("MOVE_COMPLETE", arguments.callee);
-                        if(path.length === 1) {
+                        if (path.length === 1) {
+                            This.rotationX = finalRotations.rotationX;
+                            This.rotationY = finalRotations.rotationY;
+                            This.rotationZ = finalRotations.rotationZ;
                             EventBus.emitEvent("PATH_WALK_COMPLETE", This);
+                            callback();
                         } else {
-                            This.walkPath(path.slice(1, path.length));
+                            This.walkPath(path.slice(1, path.length), finalRotations, callback);
                         }
                     }
                 });
@@ -108,29 +112,15 @@ define(["app/utils/RenderObject",
                 EventBus.emitEvent("ENTERED_ROOM", This, {room: room});
             };
 
-            This.findWorkstation = function (room) {
-                const desk = room.desk;
-                // const freeWorkstation = desk.findFreeWorkstation();
-                // const seatPosition = freeWorksation.freeSeat();
-                const map = room.pathMap.calculatedMap;
-                const mapKeys = Object.keys(map);
-                const randomKey = mapKeys[Math.floor(mapKeys.length * Math.random())];
-                const randomSpot = map[randomKey];
-
-                const path = AStar.pathBetween(map, room.pathMap.entrancePoint, randomSpot);
-
-                const initial = {x: This.x, y: This.y};
-                path.unshift(initial);
-
-                room.pathMap.path = path;
-                This.walkPath(path);
-            };
-
             EventBus.bindListener("ENTERED_ROOM", function (src, data) {
                 if (src === This) {
                     const room = data.room;
+                    This.room = room;
                     if (room.type === "DEVELOPMENT") {
-                        This.findWorkstation(room);
+                        room.findWorkstation(This);
+                    }
+                    if (room.type === "MEETING") {
+                        room.sitAtTable(This);
                     }
                 }
             });

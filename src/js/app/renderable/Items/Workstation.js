@@ -11,7 +11,7 @@ define(["app/utils/RenderObject",
             const standColour = this.color(colour, 0x33, 0x88);
 
             const frameWidth = 5;
-            const userDistance = 75;
+            const userDistance = 80;
             const screenWidth = 16 * frameWidth;
             const screenHeight = 9 * frameWidth;
             const standTopWidth = frameWidth * 2;
@@ -29,14 +29,12 @@ define(["app/utils/RenderObject",
                 width,
                 height,
                 on,
-                users, userPositions,
-                debug:true
+                users, userPositions
             });
-            
-            isPairing = true;
+
             if(isPairing) {
-                userPositions.push({x: - userDistance/2, y: userDistance});
-                userPositions.push({x: + userDistance/2, y: userDistance});
+                userPositions.push({x: - userDistance/3, y: userDistance});
+                userPositions.push({x: + userDistance/3, y: userDistance});
             } else {
                 userPositions.push({x: 0, y: userDistance});
             }
@@ -71,27 +69,46 @@ define(["app/utils/RenderObject",
                 renderScreen.apply(this);
                 renderStand.apply(this);
                 this.pop();
-
-                this.fill(standColour);
-                for(let i = 0; i < This.userPositions.length; i++) {
-                    const {x, y} = This.userPositions[i];
-                    this.ellipse(x, y, 50, 50);
-                }
+                //
+                // this.fill(standColour);
+                // for(let i = 0; i < This.userPositions.length; i++) {
+                //     const {x, y} = This.userPositions[i];
+                //     this.ellipse(x, y, 50, 50);
+                // }
             };
 
-            This.isFree = function () {
+            This.takeSeat = function (person, seat) {
+                seat.isTaken = true;
+                This.users.push(person);
+            };
+
+            This.findFreeSeat = function () {
+                return userPositions.find(function (seat) {
+                    return !seat.isTaken;
+                });
+            };
+
+            This.turnOn = function () {
+                this.on = true;
+            };
+
+            This.turnOff = function () {
+                this.on = false;
+            };
+
+            This.hasSpace = function () {
                 return isPairing ? This.users.length < 2 : This.users.length === 0;
             };
 
             EventBus.bindListener("TURN_ON_WORKSTATION", function(target, data) {
                 if(data.workstation === This) {
-                    this.on = true;
+                    This.turnOn();
                 }
             });
 
             EventBus.bindListener("TURN_OFF_WORKSTATION", function(target, data) {
                 if(data.workstation === This) {
-                    this.on = false;
+                    This.turnOff();
                 }
             });
 

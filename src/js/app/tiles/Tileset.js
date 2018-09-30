@@ -28,10 +28,10 @@ define(['app/tiles/Tile'], function(Tile) {
 
     const basePath = 'tiles/';
 
-    const addTileAndRotations = function(tileset, path, features) {
+    const addTileAndRotations = function(context, tileset, path, features) {
         const ident = path.substr(0, 4);
         const probability = features !== undefined && features.length > 0 ? 0.1 : 1;
-        const rot0 = Tile.new(ident, basePath + path, 0, probability, features);
+        const rot0 = Tile.new(context, ident, basePath + path, 0, probability, features);
         const rot1 = rot0.rotate(1);
         const rot2 = rot0.rotate(2);
         const rot3 = rot0.rotate(3);
@@ -39,90 +39,97 @@ define(['app/tiles/Tile'], function(Tile) {
         return tileset.concat([rot0, rot1, rot2, rot3]);
     };
 
-    const loadDefaultTileset = function () {
+    const loadDefaultTileset = function (context) {
         let allTiles = [];
 
         // This is dumb, but quick.
-        allTiles = addTileAndRotations(allTiles, "CCGC1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CCGG1.jpg", ["castle", "corn"]);
-        allTiles = addTileAndRotations(allTiles, "CCRC1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CCRC2.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CGCG1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CGGC1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CGGC2.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CGGC3.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CGGC4.jpg", ["castle", "corn"]);
-        allTiles = addTileAndRotations(allTiles, "CGGG1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CGGG2.jpg", ["castle", "shrine"]);
-        allTiles = addTileAndRotations(allTiles, "CGRC1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CGRG1.jpg", ["castle", "shrine"]);
-        allTiles = addTileAndRotations(allTiles, "CGRR1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CGRR2.jpg", ["castle", "corn"]);
-        allTiles = addTileAndRotations(allTiles, "CLCL1.jpg", ["castle", "river"]);
-        allTiles = addTileAndRotations(allTiles, "CLCL2.jpg", ["castle", "river"]);
-        allTiles = addTileAndRotations(allTiles, "CLLC1.jpg", ["castle", "river"]);
-        allTiles = addTileAndRotations(allTiles, "CLRL1.jpg", ["castle", "river"]);
-        allTiles = addTileAndRotations(allTiles, "CRCR1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CRGG1.jpg", ["castle", "corn"]);
-        allTiles = addTileAndRotations(allTiles, "CRGR1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CRGR2.jpg", ["castle", "shrine"]);
-        allTiles = addTileAndRotations(allTiles, "CRRC1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CRRC2.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CRRG1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CRRR1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CRRR2.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "CRRR3.jpg", ["castle", "lake"]);
-        allTiles = addTileAndRotations(allTiles, "GCGC1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "GCRC1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "GGGG1.jpg", ["church"]);
-        allTiles = addTileAndRotations(allTiles, "GGGG2.jpg");
-        allTiles = addTileAndRotations(allTiles, "GGGG3.jpg", ["shrine"]);
-        allTiles = addTileAndRotations(allTiles, "GGGL1.jpg", ["lake", "river"]);
-        allTiles = addTileAndRotations(allTiles, "GGLL1.jpg", ["river"]);
-        allTiles = addTileAndRotations(allTiles, "GGRG1.jpg", ["church"]);
-        allTiles = addTileAndRotations(allTiles, "GGRG2.jpg", ["shrine"]);
-        allTiles = addTileAndRotations(allTiles, "GGRR1.jpg");
-        allTiles = addTileAndRotations(allTiles, "GGRR2.jpg", ["corn"]);
-        allTiles = addTileAndRotations(allTiles, "GLGG1.jpg", ["river"]);
-        allTiles = addTileAndRotations(allTiles, "GLGL1.jpg", ["river"]);
-        allTiles = addTileAndRotations(allTiles, "GLGR1.jpg", ["river"]);
-        allTiles = addTileAndRotations(allTiles, "GLRL1.jpg", ["church", "river"]);
-        allTiles = addTileAndRotations(allTiles, "GRGR1.jpg");
-        allTiles = addTileAndRotations(allTiles, "GRRR1.jpg");
-        allTiles = addTileAndRotations(allTiles, "GRRR2.jpg", ["lake"]);
-        allTiles = addTileAndRotations(allTiles, "LRLR1.jpg", ["river"]);
-        allTiles = addTileAndRotations(allTiles, "RCRC1.jpg", ["castle"]);
-        allTiles = addTileAndRotations(allTiles, "RGRG1.jpg", ["shrine"]);
-        allTiles = addTileAndRotations(allTiles, "RGRR1.jpg", ["corn"]);
-        allTiles = addTileAndRotations(allTiles, "RRLL1.jpg", ["river"]);
-        allTiles = addTileAndRotations(allTiles, "RRRR1.jpg");
-        allTiles = addTileAndRotations(allTiles, "RRRR2.jpg", ["church"]);
+        allTiles = addTileAndRotations(context, allTiles, "CCGC1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CCGG1.jpg", ["castle", "corn"]);
+        allTiles = addTileAndRotations(context, allTiles, "CCRC1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CCRC2.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGCG1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGGC1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGGC2.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGGC3.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGGC4.jpg", ["castle", "corn"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGGG1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGGG2.jpg", ["castle", "shrine"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGRC1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGRG1.jpg", ["castle", "shrine"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGRR1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CGRR2.jpg", ["castle", "corn"]);
+        allTiles = addTileAndRotations(context, allTiles, "CLCL1.jpg", ["castle", "river"]);
+        allTiles = addTileAndRotations(context, allTiles, "CLCL2.jpg", ["castle", "river"]);
+        allTiles = addTileAndRotations(context, allTiles, "CLLC1.jpg", ["castle", "river"]);
+        allTiles = addTileAndRotations(context, allTiles, "CLRL1.jpg", ["castle", "river"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRCR1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRGG1.jpg", ["castle", "corn"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRGR1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRGR2.jpg", ["castle", "shrine"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRRC1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRRC2.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRRG1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRRR1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRRR2.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "CRRR3.jpg", ["castle", "lake"]);
+        allTiles = addTileAndRotations(context, allTiles, "GCGC1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "GCRC1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "GGGG1.jpg", ["church"]);
+        allTiles = addTileAndRotations(context, allTiles, "GGGG2.jpg");
+        allTiles = addTileAndRotations(context, allTiles, "GGGG3.jpg", ["shrine"]);
+        allTiles = addTileAndRotations(context, allTiles, "GGGL1.jpg", ["lake", "river"]);
+        allTiles = addTileAndRotations(context, allTiles, "GGLL1.jpg", ["river"]);
+        allTiles = addTileAndRotations(context, allTiles, "GGRG1.jpg", ["church"]);
+        allTiles = addTileAndRotations(context, allTiles, "GGRG2.jpg", ["shrine"]);
+        allTiles = addTileAndRotations(context, allTiles, "GGRR1.jpg");
+        allTiles = addTileAndRotations(context, allTiles, "GGRR2.jpg", ["corn"]);
+        allTiles = addTileAndRotations(context, allTiles, "GLGG1.jpg", ["river"]);
+        allTiles = addTileAndRotations(context, allTiles, "GLGL1.jpg", ["river"]);
+        allTiles = addTileAndRotations(context, allTiles, "GLGR1.jpg", ["river"]);
+        allTiles = addTileAndRotations(context, allTiles, "GLRL1.jpg", ["church", "river"]);
+        allTiles = addTileAndRotations(context, allTiles, "GRGR1.jpg");
+        allTiles = addTileAndRotations(context, allTiles, "GRRR1.jpg");
+        allTiles = addTileAndRotations(context, allTiles, "GRRR2.jpg", ["lake"]);
+        allTiles = addTileAndRotations(context, allTiles, "LRLR1.jpg", ["river"]);
+        allTiles = addTileAndRotations(context, allTiles, "RCRC1.jpg", ["castle"]);
+        allTiles = addTileAndRotations(context, allTiles, "RGRG1.jpg", ["shrine"]);
+        allTiles = addTileAndRotations(context, allTiles, "RGRR1.jpg", ["corn"]);
+        allTiles = addTileAndRotations(context, allTiles, "RRLL1.jpg", ["river"]);
+        allTiles = addTileAndRotations(context, allTiles, "RRRR1.jpg");
+        allTiles = addTileAndRotations(context, allTiles, "RRRR2.jpg", ["church"]);
 
         return allTiles;
     };
 
-    const defaultTileset = loadDefaultTileset();
+    let _defaultTileset;
+    const getDefaultTileset = function (context) {
+        if(_defaultTileset === undefined) {
+            _defaultTileset = loadDefaultTileset(context);
+        }
 
-    const tilesWithoutFeature = function(feature) {
-        return defaultTileset.filter(function(tile) {
+        return _defaultTileset;
+    };
+
+    const tilesWithoutFeature = function(context, feature) {
+        return getDefaultTileset(context).filter(function(tile) {
             return tile.features.indexOf(feature) === -1;
         });
     };
 
-    const tilesWithFeature = function(feature) {
-        return defaultTileset.filter(function(tile) {
+    const tilesWithFeature = function(context, feature) {
+        return getDefaultTileset(context).filter(function(tile) {
             return tile.features.indexOf(feature) !== -1;
         });
     };
 
-    const loadNoRiversTileset = function() {
-        const noRiversTileset = tilesWithoutFeature("river");
+    const loadNoRiversTileset = function(context) {
+        const noRiversTileset = tilesWithoutFeature(context, "river");
 
         return constructor(noRiversTileset);
     };
 
-    const loadTileset = function() {
-        const defaultTileset = loadDefaultTileset();
+    const loadTileset = function(context) {
+        const defaultTileset = getDefaultTileset(context);
         return constructor(defaultTileset());
     };
 

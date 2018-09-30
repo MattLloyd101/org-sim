@@ -12,13 +12,12 @@ define(["app/utils/RenderObject",
             const doorDepth = 0;
             const depth = 200;
 
-            const pathMap = PathMap.new(-width / 2, -height / 2, width, height, 5, 25);
+            const pathMap = PathMap.new(-width / 2, -height / 2, width, height, 15, 25);
 
             const parent = RenderObject.new();
             const This = Object.assign(parent, {
-                width,
-                height,
-                depth,
+                width, height, depth,
+                doorDirection,
                 type,
                 pathMap,
                 debug: true
@@ -26,17 +25,25 @@ define(["app/utils/RenderObject",
 
             This.entranceZ = -(depth - doorHeight) / 2;
             if (doorDirection === "TOP") {
+                This.entranceRot = 0;
                 This.entranceX = 0;
                 This.entranceY = -height / 2;
             }
             else if (doorDirection === "BOTTOM") {
+                This.entranceRot = 0;
                 This.entranceX = 0;
                 This.entranceY = height / 2;
+            } else if(doorDirection === "LEFT") {
+                This.entranceRot = Math.PI/2;
+                This.entranceX = -width / 2;
+                This.entranceY = 0;
             }
+
             pathMap.setDoorway(This.entranceX, This.entranceY);
 
             const renderDoor = function () {
                 this.translate(This.entranceX, This.entranceY, This.entranceZ);
+                this.rotateZ(This.entranceRot);
                 this.box(doorWidth, doorDepth, doorHeight);
             };
 

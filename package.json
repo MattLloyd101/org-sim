@@ -17,23 +17,7 @@
     "node": "8.11"
   },
   "watch": {
-    "build-tiles": {
-      "patterns": [
-        "src",
-        "lib"
-      ],
-      "extensions": "js,html,glsl,css",
-      "quiet": false
-    },
     "build-p5": {
-      "patterns": [
-        "src",
-        "lib"
-      ],
-      "extensions": "js,html,glsl,css",
-      "quiet": false
-    },
-    "build": {
       "patterns": [
         "src",
         "lib"
@@ -43,12 +27,17 @@
     }
   },
   "dependencies": {
+    "browserify": "^16.2.3",
     "express": "^4.16.3",
+    "math3d": "^0.2.2",
     "p5": "^0.7.2",
     "requirejs": "^2.3.5",
     "toxiclibsjs": "^0.3.3"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^10.0.0",
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
     "npm-watch": "^0.3.0",

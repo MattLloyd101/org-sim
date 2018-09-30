@@ -52,16 +52,16 @@ define([], function () {
         };
 
         This.renderDebug = function () {
-            const debugPointColour = this.color(172, 0xFF, 0xFF, 64);
-            const context = this;
-
+            // const debugPointColour = this.color(172, 0xFF, 0xFF, 64);
+            // const context = this;
+            //
             // this.push();
             // this.translate(0, 0, 0);
             // this.colorMode(this.RGB, 0xFF);
             // this.stroke(0, 0, 0xFF);
             // this.line(This.doorwayX, This.doorwayY, 0, This.doorwayX, This.doorwayY, 100);
             // this.pop();
-
+            //
             // this.noStroke();
             // Object.keys(This.calculatedMap).map(function (key) {
             //     const point = This.calculatedMap[key];
@@ -73,7 +73,7 @@ define([], function () {
             //     } else {
             //         context.fill(debugPointColour);
             //     }
-
+            //
             //     context.rect(-resolution/2, -resolution/2, resolution, resolution);
             //     context.pop();
             // });
