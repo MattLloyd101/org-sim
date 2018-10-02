@@ -3,7 +3,7 @@ define(["app/utils/RenderObject"], function (RenderObject) {
     const constructor = function (radius, colour) {
 
         const planeColour = this.color(colour, 0x33, 0xFF);
-        const edgeColour = this.color(colour, 0xFF, 0x33);
+        const edgeColour = this.color(colour, 0x44, 0xFF);
 
         const depth = 10;
         const width = radius * 2;
@@ -16,6 +16,7 @@ define(["app/utils/RenderObject"], function (RenderObject) {
         This.rotationX = Math.PI / 2;
 
         This.render = function () {
+            this.stroke(edgeColour);
             this.fill(planeColour);
             this.cylinder(radius, depth);
         };

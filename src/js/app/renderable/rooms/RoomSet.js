@@ -38,18 +38,18 @@ define(["app/utils/RenderObject",
             });
 
             topRooms.reduce(function (offset, room) {
-                room.x = offset;
+                room.x = offset + room.width / 2;
                 This.addChild(room);
                 room.y = -width / 2 - room.height / 2;
-                return room.x + room.height;
-            }, 0);
+                return room.x + room.width / 2;
+            }, -height / 2);
 
             bottomRooms.reduce(function (offset, room) {
-                room.x = offset;
+                room.x = offset + room.width / 2;
                 This.addChild(room);
-                room.y = width / 2 + room.height/2;
-                return room.x + room.height;
-            }, 0);
+                room.y = width / 2 + room.height / 2;
+                return room.x + room.width / 2;
+            }, -height / 2);
 
             This.addChild(corridoor);
 

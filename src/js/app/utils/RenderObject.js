@@ -5,6 +5,7 @@ define(["app/utils/math3d/Vector3",
               Quaternion,
               Matrix4x4) {
 
+        const clickRegister = {};
         let context;
         let cbContext;
         let _id = 0;
@@ -121,20 +122,36 @@ define(["app/utils/math3d/Vector3",
                 return Matrix4x4.WorldToLocalMatrix(position, rotation, scale);
             };
 
-            // TODO: If we need a click buffer re-use This.render if This.cbRender is not defined.
-            // Override .fill() with object id.
-            This.cbRenderAll = function () {
-
+            This.registerClickHandler = function (fn) {
+                clickRegister[This.id] = clickRegister[This.id] || [fn];
             };
 
-            This.renderAll = function () {
+            This.performClick = function (id, mouseX, mouseY) {
+                if (id in clickRegister) {
+                    clickRegister[id].map(function (fn) {
+                        fn.apply(context, [mouseX, mouseY]);
+                    });
+                }
+            };
+
+            This.renderAll = function (context, cbPass) {
+
+                if (cbPass) {
+                    context.fill = function () {
+                        context.__fill('#' + id.toString(16).padStart(4, '0') + 'FFFF');
+                    };
+                }
                 This.transform(context);
-                context.push();
-                if (This.render) This.render.apply(context);
-                context.pop();
+
+                if (!cbPass || This.id in clickRegister) {
+                    context.push();
+                    if (This.render) This.render.apply(context);
+                    context.pop();
+                }
+
                 children.map(function (child) {
                     context.push();
-                    child.renderAll();
+                    child.renderAll(context, cbPass);
                     context.pop();
                 });
 
@@ -150,6 +167,7 @@ define(["app/utils/math3d/Vector3",
 
         const setClickBufferContext = function (_cbContext) {
             cbContext = _cbContext;
+            cbContext.__fill = cbContext.fill;
         };
 
         return {

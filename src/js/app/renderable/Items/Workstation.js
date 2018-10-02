@@ -29,7 +29,8 @@ define(["app/utils/RenderObject",
                 width,
                 height,
                 on,
-                users, userPositions
+                users, userPositions,
+                clickable: true
             });
 
             if(isPairing) {
@@ -57,7 +58,7 @@ define(["app/utils/RenderObject",
                 this.endShape(this.CLOSE);
             };
 
-            var n = 0;
+            let n = 0;
             This.update = function() {
                 n+=Math.PI/60;
             };
@@ -77,6 +78,13 @@ define(["app/utils/RenderObject",
                 // }
             };
 
+            This.registerClickHandler(function () {
+                if(This.on)
+                    This.turnOff();
+                else
+                    This.turnOn();
+            });
+
             This.takeSeat = function (person, seat) {
                 seat.isTaken = true;
                 This.users.push(person);
@@ -89,11 +97,11 @@ define(["app/utils/RenderObject",
             };
 
             This.turnOn = function () {
-                this.on = true;
+                This.on = true;
             };
 
             This.turnOff = function () {
-                this.on = false;
+                This.on = false;
             };
 
             This.hasSpace = function () {

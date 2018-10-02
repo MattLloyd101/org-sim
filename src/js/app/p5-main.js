@@ -22,11 +22,12 @@ define(["p5",
               RoomSet,
               TileGroup) {
 
-        const width = window.innerWidth;//config.width;
+        const width = window.innerWidth;
         const height = window.innerHeight;
         const timestep = 1;
 
         let root;
+        let clickBuffer;
         let font;
         let tileset;
 
@@ -34,38 +35,44 @@ define(["p5",
             const teamColour = 0xFF;
             const developerCount = 12;
 
-            const devRoom = DevelopmentRoom.new.apply(context, [developerCount, false, "TOP", teamColour]);
-            const meetingRoom = MeetingRoom.new.apply(context, [developerCount,"BOTTOM", teamColour]);
+            const devRoom = DevelopmentRoom.new.apply(context, [developerCount, false, "BOTTOM", teamColour]);
+            const meetingRoom = MeetingRoom.new.apply(context, [developerCount, "TOP", teamColour]);
             const roomSet = RoomSet.new.apply(context, [[devRoom, meetingRoom], teamColour]);
 
             root.addChild(roomSet);
 
             const tiles = tileset.allTiles;
             const tileImg = TileGroup.new.apply(context, [tiles, 100, 100]);
-            tileImg.x = width / 2;
-            tileImg.y = height / 2;
-            tileImg.rotationX = 0;
-            tileImg.rotationY = 0;
-            tileImg.rotationZ = 0;
             root.addChild(tileImg);
-        };
 
+            for (let i = 0; i < 25; i++) {
+                const tileImg2 = TileGroup.new.apply(context, [tiles, 100, 100]);
+                tileImg2.x = 100 * (i % 5);
+                tileImg2.y = 100 * (1 + Math.floor(i / 5));
+                root.addChild(tileImg2);
+            }
+        };
 
         const preload = function (context) {
             font = context.loadFont('fonts/OpenSans-light.otf');
             tileset = Tileset.loadNoRiversTileset(context);
         };
 
-        const setupContext = function (context) {
-            const renderer = context.WEBGL; //context.P2D; //
-            context.createCanvas(width, height, renderer);
+        const resetContext = function (context) {
             context.ortho(-width / 2, width / 2, -height / 2, height / 2, 0, 2000);
             context.smooth(4);
             context.colorMode(context.HSB, 0xFF);
             context.textFont(font);
         };
 
+        const setupContext = function (context) {
+            const renderer = context.WEBGL;
+            context.createCanvas(width, height, renderer);
+            resetContext(context);
+        };
+
         const setup = function (context) {
+
             Keyboard.setup(context);
             setupContext(context);
 
@@ -84,30 +91,50 @@ define(["p5",
             n++;
         };
 
-        const render = function () {
+        const render = function (context) {
 
-            root.renderAll();
-            root.cbRenderAll();
+            // This seems a lil silly
+            // probably should use an off screen buffer, but this works...
+            context.push();
+            const fill = context.fill;
+            context.__fill = fill;
+            context.background(0);
+            root.renderAll(context, true);
+            clickBuffer = context.get();
+            context.fill = fill;
+            context.pop();
+
+            context.background(0xFF);
+            root.renderAll(context);
         };
 
-        const rootContext = function (sketch) {
+        const click = function (mouseX, mouseY) {
+            const pixel = clickBuffer.get(mouseX, mouseY);
+            const id = pixel[0] << 4 | pixel[1];
+            if (id > 0)
+                root.performClick(id, mouseX, mouseY);
+        };
 
-            sketch.preload = function () {
-                preload(sketch);
+        const rootContext = function (context) {
+
+            context.preload = function () {
+                preload(context);
             };
 
-            sketch.setup = function () {
-                setup(sketch);
+            context.setup = function () {
+                setup(context);
             };
 
-            sketch.draw = function () {
-                sketch.background(0xFF);
+            context.draw = function () {
+
                 update();
-                render();
+                context.push();
+                render(context);
+                context.pop();
             };
 
-            sketch.keyPressed = function () {
-                console.log(sketch.keyCode);
+            context.mouseClicked = function () {
+                click(context.mouseX, context.mouseY);
             };
         };
 
