@@ -16,15 +16,15 @@ define(["app/utils/RenderObject",
             // may need some concept of team so we don't go to double digits for roles.
             const personId = roleIdMap[role] = roleIdMap[role] + 1 || 1;
 
-            const personColour = this.color(colour, 0x88, 0xFF);
+            const personColour = this.color(colour, 0x50 + (personId * 3), 0xFF);
             const fontColour = this.color(colour, 0x88, 0x22);
-            const radius = 25;
+            const radius = 20 + (Math.random() * 7);
             const width = radius * 2;
             //noinspection JSSuspiciousNameCombination
             const height = width;
-            const depth = 100;
+            const depth = 100 + Math.random() * 25 + (Math.random() < 0.05 ? Math.random() * 25 : 0);
 
-            const speed = _speed || Random.between(3, 5);
+            const speed = _speed || Random.between(5, 7);
 
             const This = Object.assign(RenderObject.new(), {
                 personId,
@@ -83,11 +83,13 @@ define(["app/utils/RenderObject",
                     if (src === This) {
                         EventBus.removeListener("MOVE_COMPLETE", arguments.callee);
                         if (path.length === 1) {
-                            This.rotationX = finalRotations.rotationX;
-                            This.rotationY = finalRotations.rotationY;
-                            This.rotationZ = finalRotations.rotationZ;
+                            if(finalRotations) {
+                                This.rotationX = finalRotations.rotationX;
+                                This.rotationY = finalRotations.rotationY;
+                                This.rotationZ = finalRotations.rotationZ;
+                            }
                             EventBus.emitEvent("PATH_WALK_COMPLETE", This);
-                            callback();
+                            if (callback) callback();
                         } else {
                             This.walkPath(path.slice(1, path.length), finalRotations, callback);
                         }
@@ -109,21 +111,10 @@ define(["app/utils/RenderObject",
                 This.x = room.entranceX;
                 This.y = room.entranceY;
 
-                EventBus.emitEvent("ENTERED_ROOM", This, {room: room});
+                // Total hack:
+                const targetRoom = room.type === "CORRIDOR" ? room.parent : room;
+                EventBus.emitEvent("ENTERED_ROOM", This, {room: targetRoom});
             };
-
-            EventBus.bindListener("ENTERED_ROOM", function (src, data) {
-                if (src === This) {
-                    const room = data.room;
-                    This.room = room;
-                    if (room.type === "DEVELOPMENT") {
-                        room.findWorkstation(This);
-                    }
-                    if (room.type === "MEETING") {
-                        room.sitAtTable(This);
-                    }
-                }
-            });
 
             return This;
         };

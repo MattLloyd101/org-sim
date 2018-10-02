@@ -44,7 +44,6 @@ define([], function () {
     };
 
     const reconstructPath = function (cameFrom, closedSet, map, current) {
-        console.log(current, cameFrom);
         let path = [];
         while (current !== undefined) {
             const currentIndex = pointIndex(current);
@@ -57,7 +56,6 @@ define([], function () {
     };
 
     const pathBetween = function (map, start, end, heuristicFn) {
-        console.log("start", start);
         const startIndex = pointIndex(start);
         const endIndex = pointIndex(end);
         const distanceHeuristic = heuristicFn || euclidianDistance;

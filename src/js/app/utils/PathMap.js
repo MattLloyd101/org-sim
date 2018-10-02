@@ -52,31 +52,31 @@ define([], function () {
         };
 
         This.renderDebug = function () {
-            // const debugPointColour = this.color(172, 0xFF, 0xFF, 64);
-            // const context = this;
-            //
-            // this.push();
-            // this.translate(0, 0, 0);
-            // this.colorMode(this.RGB, 0xFF);
-            // this.stroke(0, 0, 0xFF);
-            // this.line(This.doorwayX, This.doorwayY, 0, This.doorwayX, This.doorwayY, 100);
-            // this.pop();
-            //
-            // this.noStroke();
-            // Object.keys(This.calculatedMap).map(function (key) {
-            //     const point = This.calculatedMap[key];
-            //     const {x, y} = point;
-            //     context.push();
-            //     context.translate(x, y, 0);
-            //     if (This.entrancePoint.x === x && This.entrancePoint.y === y) {
-            //         context.fill(context.color(50, 0xFF, 0xFF, 64));
-            //     } else {
-            //         context.fill(debugPointColour);
-            //     }
-            //
-            //     context.rect(-resolution/2, -resolution/2, resolution, resolution);
-            //     context.pop();
-            // });
+            const debugPointColour = this.color(172, 0xFF, 0xFF, 64);
+            const context = this;
+
+            this.push();
+            this.translate(0, 0, 0);
+            this.colorMode(this.RGB, 0xFF);
+            this.stroke(0, 0, 0xFF);
+            this.line(This.doorwayX, This.doorwayY, 0, This.doorwayX, This.doorwayY, 100);
+            this.pop();
+
+            this.noStroke();
+            Object.keys(This.calculatedMap).map(function (key) {
+                const point = This.calculatedMap[key];
+                const {x, y} = point;
+                context.push();
+                context.translate(x, y, 0);
+                if (This.entrancePoint.x === x && This.entrancePoint.y === y) {
+                    context.fill(context.color(50, 0xFF, 0xFF, 64));
+                } else {
+                    context.fill(debugPointColour);
+                }
+
+                context.rect(-resolution/2, -resolution/2, resolution, resolution);
+                context.pop();
+            });
 
             if(This.path) {
                 this.push();
@@ -118,7 +118,7 @@ define([], function () {
             obstacle.y = y;
             obstacle.width = width;
             obstacle.height = height;
-            recalculate();
+            This.recalculate();
         };
 
         This.removeObstacle = function (id) {
@@ -131,7 +131,7 @@ define([], function () {
             const tx = x, ty = y;
             const keys = Object.keys(This.calculatedMap);
             const [closestKey, _] = keys.reduce(function (closestAndDist, currentKey) {
-                const [closest, dist] = closestAndDist;
+                const [_, dist] = closestAndDist;
                 const current = This.calculatedMap[currentKey];
                 const {x, y} = current;
                 const dx = tx - x;

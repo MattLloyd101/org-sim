@@ -7,8 +7,11 @@ define(["p5",
         "app/renderable/RootContext",
         "app/renderable/rooms/DevelopmentRoom",
         "app/renderable/rooms/MeetingRoom",
+        "app/renderable/rooms/Office",
         "app/renderable/rooms/RoomSet",
-        "app/renderable/items/TileGroup"],
+        "app/renderable/rooms/MapRoom",
+        "app/tiles/Map"
+    ],
 
     function (p5,
               config,
@@ -19,8 +22,10 @@ define(["p5",
               RootContext,
               DevelopmentRoom,
               MeetingRoom,
+              Office,
               RoomSet,
-              TileGroup) {
+              MapRoom,
+              Map) {
 
         const width = window.innerWidth;
         const height = window.innerHeight;
@@ -32,25 +37,39 @@ define(["p5",
         let tileset;
 
         const createScene = function (root, context) {
-            const teamColour = 0xFF;
+            const teamColour = 0xFF * Math.random();
             const developerCount = 12;
+
+            const map = Map.new(tileset, 7, 7);
+            map.decideEdges();
 
             const devRoom = DevelopmentRoom.new.apply(context, [developerCount, false, "BOTTOM", teamColour]);
             const meetingRoom = MeetingRoom.new.apply(context, [developerCount, "TOP", teamColour]);
-            const roomSet = RoomSet.new.apply(context, [[devRoom, meetingRoom], teamColour]);
+            const office = Office.new.apply(context, ["TOP", teamColour]);
+            const mapRoom = MapRoom.new.apply(context, [map, "TOP", teamColour]);
+            const roomSet = RoomSet.new.apply(context, [[devRoom, meetingRoom, office, mapRoom], teamColour]);
 
             root.addChild(roomSet);
 
-            const tiles = tileset.allTiles;
-            const tileImg = TileGroup.new.apply(context, [tiles, 100, 100]);
-            root.addChild(tileImg);
+            // const tiles = tileset.allTiles;
+            // const tileImg = TileGroup.new.apply(context, [tiles, 100, 100]);
+            // root.addChild(tileImg);
+            //
+            // for (let i = 0; i < 25; i++) {
+            //     const tileImg2 = TileGroup.new.apply(context, [tiles, 100, 100]);
+            //     tileImg2.x = 100 * (i % 5);
+            //     tileImg2.y = 100 * (1 + Math.floor(i / 5));
+            //     root.addChild(tileImg2);
+            // }
 
-            for (let i = 0; i < 25; i++) {
-                const tileImg2 = TileGroup.new.apply(context, [tiles, 100, 100]);
-                tileImg2.x = 100 * (i % 5);
-                tileImg2.y = 100 * (1 + Math.floor(i / 5));
-                root.addChild(tileImg2);
+            for (let i = 0; i < developerCount; i++) {
+                const p = Person.new.apply(context, ["DEV", teamColour]);
+                p.enterRoom(roomSet.corridor);
             }
+
+            const po = Person.new.apply(context, ["PO", teamColour]);
+            office.setOwner(po);
+            po.enterRoom(office);
         };
 
         const preload = function (context) {
@@ -59,7 +78,7 @@ define(["p5",
         };
 
         const resetContext = function (context) {
-            context.ortho(-width / 2, width / 2, -height / 2, height / 2, 0, 2000);
+            context.ortho(-width / 2, width / 2, -height / 2, height / 2, -2000, 2000);
             context.smooth(4);
             context.colorMode(context.HSB, 0xFF);
             context.textFont(font);
@@ -78,9 +97,7 @@ define(["p5",
 
             RenderObject.setRootContext(context);
             root = RootContext.new();
-
-            root.rotationX = Math.PI / 4;
-            root.rotationZ = Math.PI / 8;
+            root.resetTransformation();
 
             createScene(root, context);
         };
@@ -97,11 +114,13 @@ define(["p5",
             // probably should use an off screen buffer, but this works...
             context.push();
             const fill = context.fill;
+            const texture = context.texture;
             context.__fill = fill;
             context.background(0);
             root.renderAll(context, true);
             clickBuffer = context.get();
             context.fill = fill;
+            context.texture = texture;
             context.pop();
 
             context.background(0xFF);

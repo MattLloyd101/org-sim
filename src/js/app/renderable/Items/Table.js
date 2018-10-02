@@ -1,7 +1,12 @@
 define([
     "app/utils/RenderObject",
-    "app/renderable/Items/Workstation",
-    "app/renderable/Items/TablePlane"], function (RenderObject, Workstation, TablePlane) {
+    "app/renderable/items/Workstation",
+    "app/renderable/items/TablePlane",
+    "app/utils/Random"],
+    function (RenderObject,
+              Workstation,
+              TablePlane,
+              Random) {
 
     const constructor = function (peopleCount, deskColour) {
 
@@ -9,6 +14,8 @@ define([
         const tableRadius = (peopleCount * personWidth) / (Math.PI * 2);
         const width = (tableRadius + personWidth) * 2;
         const height = width;
+
+        const standColour = this.color(deskColour, 0x33, 0x88);
 
         const This = Object.assign(RenderObject.new(), {
             peopleCount,
@@ -29,28 +36,30 @@ define([
             This.seats.push(seat);
         }
 
-        This.findFreeWorkstation = function() {
-            return This.workstations.find(function(workstation) {
-                return workstation.hasSpace();
+        Random.shuffle(This.seats);
+
+        This.takeSeat = function (person, seat) {
+            seat.isTaken = true;
+            seat.takenBy = person;
+        };
+
+        This.findFreeSeat = function () {
+            return This.seats.find(function (seat) {
+                return !seat.isTaken;
             });
         };
-
-        This.update = function() {
-        };
-
-        const standColour = this.color(deskColour, 0x33, 0x88);
 
         This.render = function () {
 
             this.fill(standColour);
-            // for(let i = 0; i < This.userPositions.length; i++) {
-            //     const {x, y} = This.userPositions[i];
-            //     this.ellipse(x, y, 50, 50);
-            // }
+            this.push();
+            this.translate(0, 0, -25);
             for (let i = 0; i < This.seats.length; i++) {
                 const {x, y} = This.seats[i];
+
                 this.ellipse(x, y, 50, 50);
             }
+            this.pop();
         };
 
         return This;

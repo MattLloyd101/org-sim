@@ -1,13 +1,14 @@
 define(["app/utils/Random"], function (Random) {
 
-    const constructor = function (tileset) {
+    const constructor = function (tileset, _width, _height) {
 
-        const width = 10;
-        const height = 10;
+        const width = _width || 10;
+        const height = _height || 10;
 
         const This = {
             width,
             height,
+            tileset,
             data: [],
             locked: {}
         };
@@ -62,7 +63,7 @@ define(["app/utils/Random"], function (Random) {
         This.findRestrictionsFor = function (i) {
             const up = This.findCommon(This.data[i - width], 'down');
             const right = This.findCommon(This.data[i + 1], 'left');
-            const down =  This.findCommon(This.data[i + width], 'up');
+            const down = This.findCommon(This.data[i + width], 'up');
             const left = This.findCommon(This.data[i - 1], 'right');
 
             const restrictions = {};
@@ -74,13 +75,33 @@ define(["app/utils/Random"], function (Random) {
             return restrictions;
         };
 
+        This.restrictOne = function (i) {
+            const restrictions = This.findRestrictionsFor(i);
+            This.data[i] = tileset.findTilesByRestrictions(restrictions);
+        };
+
         This.restrict = function () {
             for (let i = 0; i < dataSize; i++) {
-                if(This.locked[i]) continue;
+                if (This.locked[i]) continue;
 
-                const restrictions = This.findRestrictionsFor(i);
-                This.data[i] = tileset.findTilesByRestrictions(restrictions);
+                This.restrictOne(i);
             }
+        };
+
+        This.decideEdges = function () {
+
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < height; y++) {
+                    if ((y < 1 || y === height - 1) || (x === 0 || x === width - 1)) {
+                        const off = x + (y * width);
+                        const tile = Random.weightedRandomSelection(This.data[off]);
+
+                        This.fixPosition(off, tile);
+                        This.restrict();
+                    }
+                }
+            }
+
         };
 
         return This;

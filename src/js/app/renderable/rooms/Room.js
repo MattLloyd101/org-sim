@@ -19,8 +19,7 @@ define(["app/utils/RenderObject",
                 width, height, depth,
                 doorDirection,
                 type,
-                pathMap,
-                debug: true
+                pathMap
             });
 
             This.entranceZ = -(depth - doorHeight) / 2;

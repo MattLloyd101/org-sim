@@ -1,6 +1,6 @@
 define([], function () {
 
-    const constructor = function (context, ident, imgPath, rotation = 0, probability = 1, features = []) {
+    const constructor = function (context, ident, imgPath, rotation = 0, features = []) {
 
         const up = ident.substr(0, 1);
         const right = ident.substr(1, 1);
@@ -15,7 +15,6 @@ define([], function () {
             left,
             imgPath,
             rotation,
-            probability,
             features
         };
 
@@ -97,8 +96,10 @@ define([], function () {
                 } else if (rotation === 2) {
                     img.pixels = srcImg.pixels;
                     reverseCols(img.pixels, srcImg.width, srcImg.height, density);
+                    reverseRows(img.pixels, srcImg.width, srcImg.height, density);
                 } else if (rotation === 3) {
                     transposeMatrix(srcImg.pixels, img.pixels, srcImg.width, srcImg.height, density);
+                    reverseCols(img.pixels, srcImg.width, srcImg.height, density);
                 }
 
                 img.updatePixels();
@@ -115,13 +116,20 @@ define([], function () {
             let newIdent = ident + "";
             for (let i = 0; i < n; i++)
                 newIdent = newIdent.substr(3, 1) + newIdent.substr(0, 3);
-            return constructor(context, newIdent, imgPath, (rotation + n) % 4, probability, features);
+            return constructor(context, newIdent, imgPath, (rotation + n) % 4, features);
         };
 
         This.render = function () {
             const rotationString = rotation > 0 ? "class=\"rot" + rotation + "\"" : "";
             return "<img " + rotationString + "src=\"" + imgPath + " \" />";
         };
+
+        This.containsFeature = features.indexOf("castle") !== -1 ||
+            features.indexOf("church") !== -1 ||
+            features.indexOf("lake") !== -1 ||
+            features.indexOf("shrine") !== -1;
+
+        This.probability = This.containsFeature ? 0 : 1;
 
         return This;
     };

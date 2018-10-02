@@ -1,7 +1,7 @@
 define([
     "app/utils/RenderObject",
-    "app/renderable/Items/Workstation",
-    "app/renderable/Items/DeskPlane"], function (RenderObject, Workstation, DeskPlane) {
+    "app/renderable/items/Workstation",
+    "app/renderable/items/DeskPlane"], function (RenderObject, Workstation, DeskPlane) {
 
     const constructor = function (workstationNum, isPairing, deskColour) {
 

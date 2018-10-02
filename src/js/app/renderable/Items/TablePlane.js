@@ -2,7 +2,7 @@ define(["app/utils/RenderObject"], function (RenderObject) {
 
     const constructor = function (radius, colour) {
 
-        const planeColour = this.color(colour, 0x33, 0xFF);
+        const planeColour = this.color(colour, 0x33, 0xDD);
         const edgeColour = this.color(colour, 0x44, 0xFF);
 
         const depth = 10;

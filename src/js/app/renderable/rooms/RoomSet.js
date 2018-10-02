@@ -1,8 +1,10 @@
 define(["app/utils/RenderObject",
-        "app/renderable/rooms/Room"],
+        "app/renderable/rooms/Room",
+        "app/utils/AStar"],
 
     function (RenderObject,
-              Room) {
+              Room,
+              AStar) {
 
         const constructor = function (rooms, colour) {
 
@@ -26,15 +28,17 @@ define(["app/utils/RenderObject",
 
             const height = Math.max(topRoomsHeight, bottomRoomsHeight);
 
-            const type = "CORRIDOOR";
-            const corridoor = Room.new.apply(this, [height, width, "LEFT", colour, type]);
+            const type = "CORRIDOR";
+            const corridor = Room.new.apply(this, [height, width, "LEFT", colour, type]);
 
             // const pathMap = PathMap.new(-width / 2, -height / 2, width, height, 15, 25);
 
             const parent = RenderObject.new();
             const This = Object.assign(parent, {
                 rooms,
-                corridoor
+                type: "ROOM_SET",
+                corridor,
+                debug: true
             });
 
             topRooms.reduce(function (offset, room) {
@@ -51,7 +55,7 @@ define(["app/utils/RenderObject",
                 return room.x + room.width / 2;
             }, -height / 2);
 
-            This.addChild(corridoor);
+            This.addChild(corridor);
 
             This.update = function (dt) {
                 // topRooms.map(function(room) { room.y++; });
@@ -59,9 +63,32 @@ define(["app/utils/RenderObject",
             };
 
             This.renderDebug = function () {
+                if (This.targetPoint) {
+                    this.colorMode(this.RGB, 0xFF);
+                    this.stroke(0xFF, 0, 0);
+                    this.line(This.targetPoint.x, This.targetPoint.y, 0, This.targetPoint.x, This.targetPoint.y, 200);
+                }
             };
 
             This.render = function () {
+            };
+
+            This.travelTo = function (person, targetRoomType) {
+                const room = rooms.find(function (room) {
+                    return room.type === targetRoomType;
+                });
+
+                const targetPoint = {
+                    x: room.x + room.entranceX,
+                    y: room.y + room.entranceY
+                };
+                const map = corridor.pathMap;
+                const doorPositionOnMap = map.findClosestPoint(targetPoint);
+                const path = AStar.pathBetween(map.calculatedMap, map.entrancePoint, doorPositionOnMap);
+
+                person.walkPath(path, null, function () {
+                    person.enterRoom(room);
+                })
             };
 
             return This;

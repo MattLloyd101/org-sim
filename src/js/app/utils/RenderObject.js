@@ -140,6 +140,9 @@ define(["app/utils/math3d/Vector3",
                     context.fill = function () {
                         context.__fill('#' + id.toString(16).padStart(4, '0') + 'FFFF');
                     };
+                    context.texture = function () {
+                        context.__fill('#' + id.toString(16).padStart(4, '0') + 'FFFF');
+                    };
                 }
                 This.transform(context);
 

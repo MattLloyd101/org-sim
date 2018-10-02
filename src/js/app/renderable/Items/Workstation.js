@@ -29,8 +29,7 @@ define(["app/utils/RenderObject",
                 width,
                 height,
                 on,
-                users, userPositions,
-                clickable: true
+                users, userPositions
             });
 
             if(isPairing) {

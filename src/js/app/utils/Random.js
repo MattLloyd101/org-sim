@@ -28,7 +28,12 @@ define([], function () {
         }
     };
 
+    const select = function (a) {
+        return a[Math.floor(Math.random() * a.length)];
+    };
+
     return {
+        select,
         shuffle,
         between,
         weightedRandomSelection

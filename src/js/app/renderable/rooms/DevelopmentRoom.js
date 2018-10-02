@@ -2,14 +2,16 @@ define(["app/utils/RenderObject",
         "app/utils/math3d/Vector3",
         "app/utils/math3d/Quaternion",
         "app/renderable/rooms/Room",
-        "app/renderable/Items/Desk",
-        "app/utils/Astar"],
+        "app/renderable/items/Desk",
+        "app/utils/Astar",
+        "app/utils/EventBus"],
     function (RenderObject,
               Vector3,
               Quaternion,
               Room,
               Desk,
-              AStar) {
+              AStar,
+              EventBus) {
 
         const constructor = function (workstationCount, canPair, doorDirection, colour) {
 
@@ -85,6 +87,7 @@ define(["app/utils/RenderObject",
                             {rotationX: 0, rotationY: 0, rotationZ: angle},
                             function () {
                                 freeWorkstation.turnOn();
+                                EventBus.emitEvent("ARRIVED_AT_WORKSTATION", person, freeWorkstation);
                             });
                     }
                 }
