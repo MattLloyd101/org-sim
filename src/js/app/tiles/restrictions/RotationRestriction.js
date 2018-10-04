@@ -1,19 +1,18 @@
 define([], function () {
 
-    const constructor = function (off, feature, isRequirement) {
+    const constructor = function (off, rotation, isRequirement) {
 
         const This = {
-            type: "FEATURE",
+            restrictionType: "ROTATION",
             offset: off,
-            feature,
+            rotation,
             isRequirement
         };
 
         This.shouldKeepTile = function (tile) {
-            const containsFeature = tile.features.indexOf(feature) !== -1;
-            // if it's a requirement then we must keep this feature
-            // otherwise it's a restriction so we must get rid of it
-            return isRequirement ? containsFeature : !containsFeature;
+            const matches = tile.rotation === rotation;
+
+            return isRequirement ? matches : !matches;
         };
 
         This.restrict = function (tiles) {
@@ -23,10 +22,9 @@ define([], function () {
         This.isEqual = function (other) {
             return This.restrictionType === other.restrictionType &&
                 This.offset === other.offset &&
-                This.feature === other.feature &&
+                This.rotation === other.rotation &&
                 This.isRequirement === other.isRequirement;
         };
-
         return This;
     };
 

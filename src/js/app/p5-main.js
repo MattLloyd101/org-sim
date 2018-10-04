@@ -5,11 +5,7 @@ define(["p5",
         "app/utils/RenderObject",
         "app/renderable/Person",
         "app/renderable/RootContext",
-        "app/renderable/rooms/DevelopmentRoom",
-        "app/renderable/rooms/MeetingRoom",
-        "app/renderable/rooms/Office",
-        "app/renderable/rooms/RoomSet",
-        "app/renderable/rooms/MapRoom",
+        "app/teams/BasicTeam",
         "app/tiles/Map"
     ],
 
@@ -20,57 +16,17 @@ define(["p5",
               RenderObject,
               Person,
               RootContext,
-              DevelopmentRoom,
-              MeetingRoom,
-              Office,
-              RoomSet,
-              MapRoom,
+              BasicTeam,
               Map) {
 
         const width = window.innerWidth;
-        const height = window.innerHeight;
+        const height = window.innerHeight * 0.85;
         const timestep = 1;
 
         let root;
         let clickBuffer;
         let font;
         let tileset;
-
-        const createScene = function (root, context) {
-            const teamColour = 0xFF * Math.random();
-            const developerCount = 12;
-
-            const map = Map.new(tileset, 7, 7);
-            map.decideEdges();
-
-            const devRoom = DevelopmentRoom.new.apply(context, [developerCount, false, "BOTTOM", teamColour]);
-            const meetingRoom = MeetingRoom.new.apply(context, [developerCount, "TOP", teamColour]);
-            const office = Office.new.apply(context, ["TOP", teamColour]);
-            const mapRoom = MapRoom.new.apply(context, [map, "TOP", teamColour]);
-            const roomSet = RoomSet.new.apply(context, [[devRoom, meetingRoom, office, mapRoom], teamColour]);
-
-            root.addChild(roomSet);
-
-            // const tiles = tileset.allTiles;
-            // const tileImg = TileGroup.new.apply(context, [tiles, 100, 100]);
-            // root.addChild(tileImg);
-            //
-            // for (let i = 0; i < 25; i++) {
-            //     const tileImg2 = TileGroup.new.apply(context, [tiles, 100, 100]);
-            //     tileImg2.x = 100 * (i % 5);
-            //     tileImg2.y = 100 * (1 + Math.floor(i / 5));
-            //     root.addChild(tileImg2);
-            // }
-
-            for (let i = 0; i < developerCount; i++) {
-                const p = Person.new.apply(context, ["DEV", teamColour]);
-                p.enterRoom(roomSet.corridor);
-            }
-
-            const po = Person.new.apply(context, ["PO", teamColour]);
-            office.setOwner(po);
-            po.enterRoom(office);
-        };
 
         const preload = function (context) {
             font = context.loadFont('fonts/OpenSans-light.otf');
@@ -99,7 +55,7 @@ define(["p5",
             root = RootContext.new();
             root.resetTransformation();
 
-            createScene(root, context);
+            BasicTeam.new(context, root, tileset);
         };
 
         let n = 0;
@@ -129,7 +85,8 @@ define(["p5",
 
         const click = function (mouseX, mouseY) {
             const pixel = clickBuffer.get(mouseX, mouseY);
-            const id = pixel[0] << 4 | pixel[1];
+            const id = pixel[0] << 8 | pixel[1];
+
             if (id > 0)
                 root.performClick(id, mouseX, mouseY);
         };

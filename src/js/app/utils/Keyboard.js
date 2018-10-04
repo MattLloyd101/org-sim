@@ -4,7 +4,7 @@ define([], function () {
     const activeKeys = {};
     const codeMapping = {
         16: "SHIFT",
-        17: "CONTROL",
+        17: "CTRL",
         18: "OPTION",
         37: "LEFT",
         38: "UP",

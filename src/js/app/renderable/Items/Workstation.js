@@ -86,7 +86,6 @@ define(["app/utils/RenderObject",
 
             This.takeSeat = function (person, seat) {
                 seat.isTaken = true;
-                This.users.push(person);
             };
 
             This.findFreeSeat = function () {
@@ -104,16 +103,24 @@ define(["app/utils/RenderObject",
             };
 
             This.hasSpace = function () {
-                return isPairing ? This.users.length < 2 : This.users.length === 0;
+                const freeSpots = userPositions.filter(function (seat) {
+                    return !seat.isTaken;
+                });
+
+                return freeSpots.length > 0;
             };
 
-            EventBus.bindListener("TURN_ON_WORKSTATION", function(target, data) {
+            This.isFull = function () {
+                return This.users.length === This.userPositions.length;
+            };
+
+            This.eventBus.bindListener("TURN_ON_WORKSTATION", function(data) {
                 if(data.workstation === This) {
                     This.turnOn();
                 }
             });
 
-            EventBus.bindListener("TURN_OFF_WORKSTATION", function(target, data) {
+            This.eventBus.bindListener("TURN_OFF_WORKSTATION", function(data) {
                 if(data.workstation === This) {
                     This.turnOff();
                 }

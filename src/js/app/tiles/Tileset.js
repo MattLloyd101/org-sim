@@ -13,7 +13,7 @@ define(['app/tiles/Tile'], function(Tile) {
                 let matchesRestriction;
 
                 for(let key in restrictions) {
-                    if(restrictions.hasOwnProperty(key)) {
+                    if(key !== "offset" && restrictions.hasOwnProperty(key)) {
                         matchesRestriction = tile[key] === restrictions[key];
                         if (!matchesRestriction) break;
                     }

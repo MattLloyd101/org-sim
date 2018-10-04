@@ -4,7 +4,7 @@ define([], function () {
 
         const This = {
             restrictionType: "EDGE",
-            off,
+            offset: off,
             edge,
             type,
             isRequirement
@@ -19,6 +19,14 @@ define([], function () {
 
         This.restrict = function (tiles) {
             return tiles.filter(This.shouldKeepTile);
+        };
+
+        This.isEqual = function (other) {
+            return This.restrictionType === other.restrictionType &&
+                This.offset === other.offset &&
+                This.edge === other.edge &&
+                This.type === other.type &&
+                This.isRequirement === other.isRequirement;
         };
 
         return This;

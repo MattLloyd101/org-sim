@@ -1,38 +1,41 @@
 define([], function () {
 
-    // Dumb singleton implementation for this purpose.
-    const db = {};
+    let id = 0;
 
-    const emitEvent = function (binding, source, data) {
-        const listeners = db[binding];
-        if(listeners) {
-            for (let i = 0; i < listeners.length; i++) {
-                const fn = listeners[i];
+    const constructor = function () {
 
-                setTimeout(function () {
-                    fn.apply(null, [source, data]);
-                }, 0);
+        const This = {id: ++id};
+        const db = {};
+
+        This.emitEvent = function (binding, data) {
+            const listeners = db[binding];
+            if (listeners) {
+                for (let i = 0; i < listeners.length; i++) {
+                    const fn = listeners[i];
+
+                    fn.apply(null, [data]);
+                }
             }
-        }
-    };
+        };
 
-    const bindListener = function (binding, fn) {
-        const listeners = db[binding] || [];
-        db[binding] = listeners.concat(fn);
-    };
+        This.bindListener = function (binding, fn) {
+            const listeners = db[binding] || [];
+            db[binding] = listeners.concat(fn);
+        };
 
-    const removeListener = function(binding, fn) {
-        const listeners = db[binding];
-        const index = listeners.indexOf(fn);
-        if(index === -1) {
-            throw new Error("Function is not bound to binding(" + binding + ")");
-        }
-        listeners.splice(index, 1);
+        This.removeListener = function (binding, fn) {
+            const listeners = db[binding];
+            const index = listeners.indexOf(fn);
+            if (index === -1) {
+                throw new Error("Function is not bound to binding(" + binding + ")");
+            }
+            listeners.splice(index, 1);
+        };
+
+        return This;
     };
 
     return {
-        emitEvent,
-        bindListener,
-        removeListener
+        new: constructor
     }
 });

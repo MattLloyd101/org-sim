@@ -1,9 +1,11 @@
 define(["app/utils/math3d/Vector3",
         "app/utils/math3d/Quaternion",
-        "app/utils/math3d/Matrix4x4"],
+        "app/utils/math3d/Matrix4x4",
+        "app/utils/EventBus"],
     function (Vector3,
               Quaternion,
-              Matrix4x4) {
+              Matrix4x4,
+              EventBus) {
 
         const clickRegister = {};
         let context;
@@ -25,6 +27,8 @@ define(["app/utils/math3d/Vector3",
             const rotationZ = 0;
             const performRender = true;
 
+            const eventBus = EventBus.new();
+
             const This = {
                 id,
                 x, y, z,
@@ -32,7 +36,8 @@ define(["app/utils/math3d/Vector3",
                 rotationX, rotationY, rotationZ,
                 performRender,
                 debug,
-                context, cbContext
+                context, cbContext,
+                eventBus
             };
 
             This.addChildAt = function (child, z) {

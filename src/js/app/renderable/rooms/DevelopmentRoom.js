@@ -58,7 +58,7 @@ define(["app/utils/RenderObject",
                 const desk = room.desk;
 
                 const freeWorkstation = desk.findFreeWorkstation();
-                if (freeWorkstation !== null) {
+                if (freeWorkstation != null) {
 
                     const seatPosition = freeWorkstation.findFreeSeat();
                     if (seatPosition !== null) {
@@ -86,8 +86,12 @@ define(["app/utils/RenderObject",
                         person.walkPath(path,
                             {rotationX: 0, rotationY: 0, rotationZ: angle},
                             function () {
-                                freeWorkstation.turnOn();
-                                EventBus.emitEvent("ARRIVED_AT_WORKSTATION", person, freeWorkstation);
+                                freeWorkstation.users.push(person);
+
+                                person.eventBus.emitEvent("ARRIVED_AT_WORKSTATION", {
+                                    workstation: freeWorkstation,
+                                    canBeginWork: freeWorkstation.isFull()
+                                });
                             });
                     }
                 }

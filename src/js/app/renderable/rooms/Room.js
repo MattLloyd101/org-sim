@@ -32,8 +32,8 @@ define(["app/utils/RenderObject",
                 This.entranceRot = 0;
                 This.entranceX = 0;
                 This.entranceY = height / 2;
-            } else if(doorDirection === "LEFT") {
-                This.entranceRot = Math.PI/2;
+            } else if (doorDirection === "LEFT") {
+                This.entranceRot = Math.PI / 2;
                 This.entranceX = -width / 2;
                 This.entranceY = 0;
             }

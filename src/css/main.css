@@ -9,3 +9,7 @@ body {
    height:100%;
    overflow:hidden !important
 }
+
+.container {
+    height: 85%;
+}

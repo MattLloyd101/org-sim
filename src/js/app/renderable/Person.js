@@ -2,17 +2,22 @@ define(["app/utils/RenderObject",
         "app/renderable/Text",
         "app/utils/Random",
         "app/utils/EventBus",
-        "app/utils/AStar"],
+        "app/utils/AStar",
+        "app/renderable/items/TileGroup",
+        "app/renderable/items/SpeechBubble"],
     function (RenderObject,
               Text,
               Random,
               EventBus,
-              AStar) {
+              AStar,
+              TileGroup,
+              SpeechBubble) {
 
         const roleIdMap = {};
 
-        const constructor = function (role, colour, _speed) {
+        const constructor = function (eventBus, role, colour, _speed) {
 
+            const context = this;
             // may need some concept of team so we don't go to double digits for roles.
             const personId = roleIdMap[role] = roleIdMap[role] + 1 || 1;
 
@@ -25,15 +30,19 @@ define(["app/utils/RenderObject",
             const depth = 100 + Math.random() * 25 + (Math.random() < 0.05 ? Math.random() * 25 : 0);
 
             const speed = _speed || Random.between(5, 7);
+            const name = role + personId;
 
             const This = Object.assign(RenderObject.new(), {
+                // We want to share the event bus with the controller so we override the inherited.
+                eventBus,
                 personId,
+                name,
                 role,
                 width,
                 height
             });
 
-            const text = Text.new.apply(this, [role + personId, fontColour, 16]);
+            const text = Text.new.apply(this, [name, fontColour, 16]);
             text.z = 1;
             text.y = (depth / 2) - 1;
             This.addChild(text);
@@ -61,7 +70,7 @@ define(["app/utils/RenderObject",
                     delete This.isMoving;
                     delete This.tX;
                     delete This.tY;
-                    EventBus.emitEvent("MOVE_COMPLETE", This);
+                    This.eventBus.emitEvent("MOVE_COMPLETE");
                 }
 
                 const mX = speed * Math.cos(angle) * dt;
@@ -79,21 +88,21 @@ define(["app/utils/RenderObject",
             This.walkPath = function (path, finalRotations, callback) {
                 const {x, y} = path[0];
 
-                EventBus.bindListener("MOVE_COMPLETE", function (src) {
-                    if (src === This) {
-                        EventBus.removeListener("MOVE_COMPLETE", arguments.callee);
-                        if (path.length === 1) {
-                            if(finalRotations) {
-                                This.rotationX = finalRotations.rotationX;
-                                This.rotationY = finalRotations.rotationY;
-                                This.rotationZ = finalRotations.rotationZ;
-                            }
-                            EventBus.emitEvent("PATH_WALK_COMPLETE", This);
-                            if (callback) callback();
-                        } else {
-                            This.walkPath(path.slice(1, path.length), finalRotations, callback);
+                This.eventBus.bindListener("MOVE_COMPLETE", function () {
+
+                    This.eventBus.removeListener("MOVE_COMPLETE", arguments.callee);
+                    if (path.length === 1) {
+                        if (finalRotations) {
+                            This.rotationX = finalRotations.rotationX;
+                            This.rotationY = finalRotations.rotationY;
+                            This.rotationZ = finalRotations.rotationZ;
                         }
+                        This.eventBus.emitEvent("PATH_WALK_COMPLETE");
+                        if (callback) callback();
+                    } else {
+                        This.walkPath(path.slice(1, path.length), finalRotations, callback);
                     }
+
                 });
 
                 This.moveTowards(x, y);
@@ -113,7 +122,31 @@ define(["app/utils/RenderObject",
 
                 // Total hack:
                 const targetRoom = room.type === "CORRIDOR" ? room.parent : room;
-                EventBus.emitEvent("ENTERED_ROOM", This, {room: targetRoom});
+                This.eventBus.emitEvent("ENTERED_ROOM", {room: targetRoom});
+            };
+
+            This.registerClickHandler(function () {
+                This.eventBus.emitEvent("CLICKED_ON_PERSON");
+            });
+
+            This.showTileBubble = function (tiles, off, type, callback) {
+                const questionTileFront = TileGroup.new.apply(context, [tiles, off, 50, 50]);
+                const questionTileBack = TileGroup.new.apply(context, [tiles, off, 50, 50]);
+                const bubble = SpeechBubble.new.apply(context, [50, 50, colour, type]);
+
+                questionTileFront.z = 1;
+                questionTileBack.z = -1;
+                questionTileBack.rotationX = Math.PI;
+                bubble.z = depth*1.5;
+                bubble.addChild(questionTileFront);
+                bubble.addChild(questionTileBack);
+
+                This.addChild(bubble);
+
+                setTimeout(function() {
+                    This.removeChild(bubble);
+                    callback();
+                }, 500);
             };
 
             return This;
